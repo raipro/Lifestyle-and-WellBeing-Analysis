@@ -1,0 +1,127 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+data <- read_csv("Wellbeing_and_lifestyle_data_Kaggle.csv")
+data$GENDER[data$GENDER == 'Male'] <- 0
+data$GENDER[data$GENDER == 'Female'] <- 1
+
+data$AGE[data$AGE == 'Less than 20'] <- 0
+data$AGE[data$AGE == '21 to 35'] <- 1
+data$AGE[data$AGE == '36 to 50'] <- 2
+data$AGE[data$AGE == '51 or more'] <- 3 
+
+df <- subset(data, select = -c(1))
+df$AGE <- as.numeric(as.character(df$AGE))
+df$GENDER <- as.numeric(as.character(df$GENDER))
+```
+
+```{r}
+library(dplyr)
+my_pca <- prcomp(df, scale = TRUE, center = TRUE, retx = T)
+names(my_pca)
+```
+
+```{r}
+var_explained = my_pca$sdev^2 / sum(my_pca$sdev^2)
+
+#create scree plot
+library(ggplot2)
+
+qplot(c(1:23), var_explained) + 
+  geom_line() + 
+  xlab("Principal Component") + 
+  ylab("Variance Explained") +
+  ggtitle("Scree Plot") +
+  ylim(0, 1)
+```
+
+```{r}
+print(var_explained)
+sum <- 0
+i <- 1
+while(sum < 0.8){
+  sum = sum + var_explained[i]
+  i=i+1
+}
+```
+
+```{r}
+plot(cumsum(propve),
+    xlab = "Principal Component",
+    ylab = "Cumulative Proportion of Variance Explained",
+    ylim = c(0, 1), type = "b")
+
+```
+
+```{r}
+which(cumsum(propve) >= 0.9)[1]
+```
+
+```{r}
+train.data <- data.frame(disp = df$WORK_LIFE_BALANCE_SCORE, my_pca$x[, 1:18])
+ 
+# Running a Decision tree algporithm
+## Installing and loading packages
+
+library(rpart)
+library(rpart.plot)
+ 
+rpart.model <- rpart(disp ~ .,
+                    data = train.data, method = "anova")
+ 
+rpart.plot(rpart.model)
+```
+
+```{r}
+z <- df[,-c(1,1)]
+means <- apply(z,2,mean)
+sds <- apply(z,2,sd)
+nor <- scale(z,center=means,scale=sds)
+```
+
+```{r}
+distance = dist(nor)
+```
+
+```{r}
+df.hclust = hclust(distance)
+plot(df.hclust)
+plot(df.hclust,main='Default from hclust')
+plot(df.hclust,hang=-1,main='Default from hclust')
+```
+
+```{r}
+# creating correlation matrix
+corr_mat <- round(cor(df),2)
+ 
+# reduce the size of correlation matrix
+melted_corr_mat <- melt(corr_mat)
+
+# plotting the correlation heatmap
+ggplot(data = melted_corr_mat, aes(x=Var1, y=Var2,fill=value)) +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_gradient() +
+  geom_tile()
+```
+
+```{r}
+library(psych)
+cortest.bartlett(df)
+```
+
+```{r}
+str(mtcars)
+
+```
+
+```{r}
+hist(df$WORK_LIFE_BALANCE_SCORE)
+```

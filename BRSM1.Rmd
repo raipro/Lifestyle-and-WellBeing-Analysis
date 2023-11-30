@@ -1,0 +1,175 @@
+---
+title: "project1"
+author: "Aaditya sharma"
+date: "2023-04-13"
+output: pdf_document
+---
+
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:\
+
+```{r}
+library(readr)
+data <- read_csv("./Wellbeing_and_lifestyle_data_Kaggle.csv")
+```
+
+```{r}
+head(data,n=10)
+```
+
+```{r}
+names(data) = gsub(" ", "_", names(data))
+
+head(data)
+```
+
+```{r}
+names(data)
+```
+
+```{r}
+cust_value_model = lm(formula = LIVE_VISION ~ TODO_COMPLETED ,data = data)
+cust_value_model2 = lm(formula = BMI_RANGE ~ DAILY_STEPS + FRUITS_VEGGIES ,data = data)
+cust_value_model3 = lm(formula = SLEEP_HOURS ~ WEEKLY_MEDITATION ,data = data)
+cust_value_model4 = lm(formula = TIME_FOR_PASSION ~ ACHIEVEMENT  ,data = data)
+cust_value_model5 = lm(formula = LOST_VACATION ~ SLEEP_HOURS  ,data = data)
+cust_value_model6 = lm(formula = BMI_RANGE ~ DAILY_STEPS ,data = data)
+summary(cust_value_model)
+summary(cust_value_model2)
+summary(cust_value_model3)
+summary(cust_value_model4)
+summary(cust_value_model5)
+summary(cust_value_model6)
+```
+
+```{r}
+summary(cust_value_model4)
+```
+
+hist(model_residuals)
+
+```{r}
+# Get the model residuals
+model_residuals = cust_value_model3$residuals
+
+# Plot the result
+hist(model_residuals)
+```
+
+```{r}
+# Plot the residuals
+qqnorm(model_residuals)
+# Plot the Q-Q line
+qqline(model_residuals)
+```
+
+```{r}
+cust_value_model_test = lm(formula = ACHIEVEMENT ~ FRUITS_VEGGIES + PLACES_VISITED + CORE_CIRCLE + SUPPORTING_OTHERS + SOCIAL_NETWORK + DAILY_STRESS + DONATION + BMI_RANGE + TODO_COMPLETED + FLOW + DAILY_STEPS + LIVE_VISION + SLEEP_HOURS + LOST_VACATION + DAILY_SHOUTING + SUFFICIENT_INCOME + PERSONAL_AWARDS + TIME_FOR_PASSION + WEEKLY_MEDITATION ,data = data)
+summary(cust_value_model_test)
+```
+
+```{r}
+cust_value_model_test = lm(formula = as.integer(DAILY_STRESS) ~ WEEKLY_MEDITATION ,data = data)
+summary(cust_value_model_test)
+```
+
+```{r}
+
+```
+
+```{r}
+cust_value_model_test2 = lm(formula = SUFFICIENT_INCOME ~ PLACES_VISITED + DONATION ,data = data)
+summary(cust_value_model_test2)
+```
+
+```{r}
+cust_value_model_test3 = lm(formula = FLOW ~ TIME_FOR_PASSION ,data = data)
+summary(cust_value_model_test3)
+```
+
+```{r}
+cust_value_model_test4 = lm(formula = ACHIEVEMENT ~ FRUITS_VEGGIES + DAILY_STEPS + WEEKLY_MEDITATION + TODO_COMPLETED ,data = data)
+summary(cust_value_model_test4)
+cust_value_model_test4
+```
+
+```{r}
+model1 = cust_value_model_test2
+vif <- car::vif(model1)
+
+# display the VIF values
+vif
+```
+
+```{r}
+model1 = cust_value_model_test2
+plot(model1$fitted.values, model1$residuals, xlab = "Fitted values", ylab = "Residuals", main = "Residuals vs. Fitted Values")
+
+# add a horizontal line at y = 0 to the plot
+abline(h = 0, col = "red")
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(model1)
+```
+
+```{r}
+lmtest::bptest(model1)
+```
+
+```{r}
+model_residuals = cust_value_model_test4$residuals
+hist(model_residuals)
+```
+
+```{r}
+# Plot the residuals
+qqnorm(model_residuals)
+# Plot the Q-Q line
+qqline(model_residuals)
+```
+
+```{r}
+cust_value_model_test4_2 = lm(formula = ACHIEVEMENT ~ DAILY_STEPS + WEEKLY_MEDITATION + TODO_COMPLETED + SOCIAL_NETWORK + SUPPORTING_OTHERS ,data = data)
+summary(cust_value_model_test4_2)
+```
+
+```{r}
+model_residuals = cust_value_model_test4_2$residuals
+hist(model_residuals)
+```
+
+```{r}
+qqnorm(model_residuals)
+# Plot the Q-Q line
+qqline(model_residuals)
+```
+
+```{r}
+summary(cust_value_model2)
+```
+
+```{r}
+model_residuals = cust_value_model2$residuals
+hist(model_residuals)
+qqnorm(model_residuals)
+# Plot the Q-Q line
+qqline(model_residuals)
+```
+
+```{}
+```
+
+## 

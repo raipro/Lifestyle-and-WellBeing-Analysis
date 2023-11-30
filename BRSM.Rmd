@@ -1,0 +1,178 @@
+---
+title: "project1"
+author: "Shreyash Rai"
+date: "2023-04-13"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(readr)
+data <- read_csv("./Wellbeing_and_lifestyle_data_Kaggle.csv")
+data1 <- head(data,n=50)
+#print(data1)
+grp1 <- data$TODO_COMPLETED
+grp2 <- data$LIVE_VISION
+
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+#significant
+
+grp1 <- data$SLEEP_HOURS
+grp2 <- data$WEEKLY_MEDITATION
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+#significant
+
+grp1 <- data$TIME_FOR_PASSION
+grp2 <- data$ACHIEVEMENT
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+
+grp1 <- data$LOST_VACATION
+grp2 <- data$SLEEP_HOURS
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+```
+
+```{r cars}
+grp1 <- data$BMI_RANGE
+grp2 <- data$DAILY_STEPS
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+#negative
+grp1 <- data$BMI_RANGE
+grp2 <- data$FRUITS_VEGGIES
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+#negative
+
+grp1 <- data$FRUITS_VEGGIES
+grp2 <- data$DAILY_STEPS
+print(cor.test(grp1,grp2,method="spearman"))
+print(cor.test(grp1,grp2,method="pearson"))
+print(cor.test(grp1,grp2,method="kendall"))
+#positive
+grp3 <- data$BMI_RANGE
+library(ppcor)
+print(pcor.test(grp1,grp2,grp3,method="spearman"))
+print(pcor.test(grp1,grp2,grp3,method="pearson"))
+print(pcor.test(grp1,grp2,grp3,method="kendall"))
+
+```
+
+```{r cars}
+print(chisq.test(data$GENDER,data$DAILY_STRESS))
+
+print(chisq.test(data$AGE,data$DAILY_STRESS))
+#smaller sample size not very significant
+```
+
+```{r}
+#hypothesis 1
+boxplot(data$FRUITS_VEGGIES ~ data$ACHIEVEMENT,main = "fruits/veggies vs Achievement",ylab = "fruits/veggies",xlab ="Achievement",col = "Orange")
+boxplot(data$DAILY_STEPS ~ data$ACHIEVEMENT,main = "Daily steps vs Achievement",ylab = "Daily steps",xlab ="Achievement",col = "Orange")
+boxplot(data$TODO_COMPLETED ~ data$ACHIEVEMENT,main = "todo completed vs Achievement",ylab = "todo_completed",xlab ="Achievement",col = "Orange")
+facaov <- aov(ACHIEVEMENT ~ FRUITS_VEGGIES*DAILY_STEPS*TODO_COMPLETED,data = data)
+summary(facaov)
+temp <- aov(ACHIEVEMENT ~ factor(FRUITS_VEGGIES*DAILY_STEPS*TODO_COMPLETED),data = data)
+TukeyHSD(temp)
+#TukeyHSD(factaov)
+#levene.test(ACHIEVEMENT ~ interaction(FRUITS_VEGGIES,DAILY_STEPS),data = data)
+#factaov <- aov(TODO_COMPLETED ~ FRUITS_VEGGIES*DAILY_STEPS, data = data)
+#summary(factaov)
+
+
+
+```
+
+```{r cars}
+#hypothesis 2
+#non-normal data
+#data1 <- data[data$DAILY_STRESS != '1']
+library(ggplot2)
+boxplot(data$WEEKLY_MEDITATION ~ data$DAILY_STRESS,main = "MEDITATION vs STRESS",ylab = "MEDITATION",xlab ="STRESS",at = c(0,1,NA,2,3,4,5),col = "Orange")
+#ggplot(data1) +
+ # aes(x = DAILY_STRESS, y = WEEKLY_MEDITATION, fill = DAILY_STRESS) +
+#  geom_boxplot() +
+ # theme(legend.position = "none")
+
+library(FSA)
+res = kruskal.test(WEEKLY_MEDITATION ~ DAILY_STRESS,
+                    data = data)
+print(res)
+dunnTest(as.integer(WEEKLY_MEDITATION)~ as.integer(DAILY_STRESS),data,method = "bonferroni")
+pairwise.wilcox.test(as.integer(data$WEEKLY_MEDITATION),as.integer(data$DAILY_STRESS),
+                 p.adjust.method = "BH")
+print(res)
+```
+
+```{r}
+#library(FSA)
+
+
+```
+
+```{}
+```
+
+```{r}
+#hypothesis 3
+#hist(data$TIME_FOR_PASSION)
+#library(ggplot2)
+#ggplot(data) +
+ # aes(x = as.integer(FLOW), y = as.integer(TIME_FOR_PASSION), fill = as.integer(FLOW)) +
+  #geom_boxplot() +
+  #theme(legend.position = "none")
+boxplot(data$TIME_FOR_PASSION ~ data$FLOW,main = "PASSION vs FLOW",ylab = "PASSION",xlab ="FLOW",col = "Orange")
+res = kruskal.test(TIME_FOR_PASSION ~ FLOW,
+                    data = data)
+dunnTest(as.integer(TIME_FOR_PASSION)~ as.integer(FLOW),data,method = "bonferroni")
+pairwise.wilcox.test(as.integer(data$TIME_FOR_PASSION),as.integer(data$FLOW),
+             p.adjust.method = "BH")
+print(res)    
+```
+
+```{r}
+#hypothesis 4
+#library(car)
+boxplot(data$PLACES_VISITED ~ data$DONATION,main = "Places visited vs donation",ylab = "places visited",xlab ="donation",col = "Orange")
+bartlett.test(DONATION ~ interaction(SUFFICIENT_INCOME,PLACES_VISITED),data = data)
+factaov <- aov(DONATION ~ SUFFICIENT_INCOME*PLACES_VISITED, data = data)
+summary(factaov)
+#checking for homoscedasticity
+#plot(factaov)
+temp <- as.integer(data$SUFFICIENT_INCOME)
+temp1 <- as.integer(data$PLACES_VISITED)
+pairwise.t.test(data$DONATION, temp*temp1, p.adjust.method = "BH")
+```
+
+```{r}
+#hypothesis 5
+#comparing with 36-50 age group
+boxplot(as.integer(data$DAILY_STRESS) ~ data$AGE,main = "Stress vs age",xlab = "Age",ylab="stress",col = "Orange")
+grp1 <- as.integer(data[c(which(data$AGE=='36 to 50')),]$DAILY_STRESS)
+grp2 <- as.integer(data[c(which(data$AGE!='36 to 50')),]$DAILY_STRESS)
+#print(grp1)
+print(t.test(grp1,grp2))
+pairwise.t.test(as.integer(data$DAILY_STRESS),data$AGE,
+                 p.adjust.method = "BH")
+
+```
+
+\`\`\`
